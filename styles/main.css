@@ -1,3 +1,4 @@
+main.css
 * {
     margin: 0;
     padding: 0;
@@ -23,7 +24,7 @@ body {
 }
 
 .header h1 {
-    color: #4300b7;
+    color: #000;
     font-size: 2.5rem;
     font-weight: 600;
     margin-bottom: 20px;
@@ -51,7 +52,7 @@ body {
 
 .search-btn {
     padding: 12px 24px;
-    background: #43dae2;
+    background: #4CAF50;
     color: white;
     border: none;
     border-radius: 25px;
@@ -62,7 +63,7 @@ body {
 }
 
 .search-btn:hover {
-    background: #1a4e7f;
+    background: #45a049;
 }
 
 .main-content {
@@ -92,7 +93,7 @@ body {
 }
 
 .error {
-    background: #ff0000;
+    background: #ff6b6b;
     color: white;
     padding: 20px;
     border-radius: 10px;
