@@ -7,12 +7,12 @@ const CONFIG = {
 
 // Weather condition mappings for icons
 const WEATHER_ICONS = {
-    'clear': '☀️',
-    'partly-cloudy-day': '⛅',
-    'cloudy': '☁️',
-    'rain': '🌧️',
-    'snow': '❄️',
-    'fog': '🌫️',
-    'thunderstorm': '⛈️',
-    'drizzle': '🌦️'
-}; 
+    'clear': '🌞',                  
+    'partly-cloudy-day': '🌥️',     
+    'cloudy': '🌁',                 
+    'rain': '☔',                   
+    'snow': '⛄',                  
+    'fog': '🌁',                   
+    'thunderstorm': '⚡',
+    'drizzle': '💧'
+};
