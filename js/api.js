@@ -94,7 +94,7 @@ class WeatherAPI {
     const hourly = data.hours;
     const current = hourly[hourly.length - 1];
 
-    // Group hourly data by date
+    // Group hourly data by day
     const dailyData = {};
     hourly.forEach(hour => {
         const dateKey = new Date(hour.time).toDateString();
@@ -104,8 +104,8 @@ class WeatherAPI {
         dailyData[dateKey].push(hour);
     });
 
-    // Compute daily averages for 7 days
-    const forecast = Object.entries(dailyData).slice(1, 8).map(([date, hours]) => {
+    // Compute daily averages
+    const allDays = Object.entries(dailyData).map(([date, hours]) => {
         const temps = hours.map(h => h.airTemperature?.noaa || 0).filter(t => t !== 0);
         const avgTemp = temps.length > 0 ? temps.reduce((a, b) => a + b, 0) / temps.length : 0;
 
@@ -116,11 +116,27 @@ class WeatherAPI {
         };
     });
 
+    // Get current week's Saturday to next week's Sunday
+    const today = new Date();
+    const currentDay = today.getDay(); // Sunday = 0, Saturday = 6
+    const saturday = new Date(today);
+    saturday.setDate(today.getDate() - currentDay + 6); // get this week's Saturday
+
+    const weekDates = [];
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(saturday);
+        day.setDate(saturday.getDate() + i);
+        weekDates.push(day.toDateString());
+    }
+
+    // Filter forecast to match Saturday → Sunday of the current week
+    const forecast = allDays.filter(day => weekDates.includes(day.date.toDateString()));
+
     return {
         current: {
             temperature: Math.round(current.airTemperature?.noaa || 0),
             humidity: Math.round(current.humidity?.noaa || 0),
-            windSpeed: Math.round((current.windSpeed?.noaa || 0) * 3.6), // Convert m/s to km/h
+            windSpeed: Math.round((current.windSpeed?.noaa || 0) * 3.6),
             pressure: Math.round(current.pressure?.noaa || 0),
             description: this.getWeatherDescription(current.cloudCover?.noaa || 0),
             feelsLike: Math.round(current.airTemperature?.noaa || 0)
