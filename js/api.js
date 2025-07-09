@@ -7,7 +7,7 @@ class WeatherAPI {
     async getCoordinates(city) {
         try {
             // Use a free geocoding service
-            const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+            const response = await fetch(https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json);
             
             if (!response.ok) {
                 throw new Error('Failed to get coordinates');
@@ -59,7 +59,7 @@ class WeatherAPI {
             params: 'airTemperature,humidity,windSpeed,pressure,cloudCover,precipitation'
         });
 
-        const response = await fetch(`${this.baseURL}/weather/point?${params}`, {
+        const response = await fetch(${this.baseURL}/weather/point?${params}, {
             headers: {
                 'Authorization': this.apiKey
             }
@@ -67,7 +67,7 @@ class WeatherAPI {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Stormglass API failed: ${response.status} - ${errorText}`);
+            throw new Error(Stormglass API failed: ${response.status} - ${errorText});
         }
 
         const data = await response.json();
@@ -79,7 +79,7 @@ class WeatherAPI {
         
         // Get current weather
         const currentResponse = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&timezone=auto`
+            https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&timezone=auto
         );
 
         if (!currentResponse.ok) {
@@ -91,43 +91,43 @@ class WeatherAPI {
     }
 
     processStormglassData(data) {
-    const hourly = data.hours;
-    const current = hourly[hourly.length - 1];
+        const hourly = data.hours;
+        const current = hourly[hourly.length - 1];
+        
+        // Group data by day for forecast
+        const dailyData = {};
+        hourly.forEach(hour => {
+            const date = new Date(hour.time).toDateString();
+            if (!dailyData[date]) {
+                dailyData[date] = [];
+            }
+            dailyData[date].push(hour);
+        });
 
-    // Group hourly data by date
-    const dailyData = {};
-    hourly.forEach(hour => {
-        const dateKey = new Date(hour.time).toDateString();
-        if (!dailyData[dateKey]) {
-            dailyData[dateKey] = [];
-        }
-        dailyData[dateKey].push(hour);
-    });
-
-    // Compute daily averages for 7 days
-    const forecast = Object.entries(dailyData).slice(1, 8).map(([date, hours]) => {
-        const temps = hours.map(h => h.airTemperature?.noaa || 0).filter(t => t !== 0);
-        const avgTemp = temps.length > 0 ? temps.reduce((a, b) => a + b, 0) / temps.length : 0;
+        // Calculate daily averages
+        const forecast = Object.entries(dailyData).map(([date, hours]) => {
+            const temps = hours.map(h => h.airTemperature?.noaa || 0).filter(t => t !== 0);
+            const avgTemp = temps.length > 0 ? temps.reduce((a, b) => a + b, 0) / temps.length : 0;
+            
+            return {
+                date: new Date(date),
+                temperature: Math.round(avgTemp),
+                description: this.getWeatherDescription(hours[0].cloudCover?.noaa || 0)
+            };
+        });
 
         return {
-            date: new Date(date),
-            temperature: Math.round(avgTemp),
-            description: this.getWeatherDescription(hours[0].cloudCover?.noaa || 0)
+            current: {
+                temperature: Math.round(current.airTemperature?.noaa || 0),
+                humidity: Math.round(current.humidity?.noaa || 0),
+                windSpeed: Math.round((current.windSpeed?.noaa || 0) * 3.6), // Convert m/s to km/h
+                pressure: Math.round(current.pressure?.noaa || 0),
+                description: this.getWeatherDescription(current.cloudCover?.noaa || 0),
+                feelsLike: Math.round(current.airTemperature?.noaa || 0)
+            },
+            forecast: forecast.slice(1, 6) // Next 5 days
         };
-    });
-
-    return {
-        current: {
-            temperature: Math.round(current.airTemperature?.noaa || 0),
-            humidity: Math.round(current.humidity?.noaa || 0),
-            windSpeed: Math.round((current.windSpeed?.noaa || 0) * 3.6), // Convert m/s to km/h
-            pressure: Math.round(current.pressure?.noaa || 0),
-            description: this.getWeatherDescription(current.cloudCover?.noaa || 0),
-            feelsLike: Math.round(current.airTemperature?.noaa || 0)
-        },
-        forecast: forecast
-    };
-}
+    }
 
     processOpenMeteoData(data) {
         const current = data.current;
