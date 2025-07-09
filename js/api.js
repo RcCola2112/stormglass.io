@@ -7,7 +7,7 @@ class WeatherAPI {
     async getCoordinates(city) {
         try {
             // Use a free geocoding service
-            const response = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json');
+            const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
             
             if (!response.ok) {
                 throw new Error('Failed to get coordinates');
@@ -59,7 +59,7 @@ class WeatherAPI {
             params: 'airTemperature,humidity,windSpeed,pressure,cloudCover,precipitation'
         });
 
-        const response = await fetch('${this.baseURL}/weather/point?${params}', {
+        const response = await fetch(`${this.baseURL}/weather/point?${params}`, {
             headers: {
                 'Authorization': this.apiKey
             }
@@ -67,7 +67,7 @@ class WeatherAPI {
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error('Stormglass API failed: ${response.status} - ${errorText}');
+            throw new Error(`Stormglass API failed: ${response.status} - ${errorText}`);
         }
 
         const data = await response.json();
@@ -79,7 +79,7 @@ class WeatherAPI {
         
         // Get current weather
         const currentResponse = await fetch(
-            'https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&timezone=auto'
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m,surface_pressure,cloud_cover&timezone=auto`
         );
 
         if (!currentResponse.ok) {
